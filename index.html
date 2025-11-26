@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Tracker</title>
+    <link rel = "stylesheet" href = "styles/left.css">
+    <link rel = "stylesheet" href = "styles/right.css">
+    <link rel = "stylesheet" href = "styles/style.css">
+</head>
+<body>
+    
+    <div class = "tracker-div">
+        <div class = "left">
+            <div class = "current-balance">
+                <p class = "current-text">
+                    Current Balance
+                </p>
+                <p class = "balance-text">
+
+                </p>
+            </div>
+
+            <div class = "description-div">
+                <div class = "description">
+                    <input type = "text" class = "description-input desc" placeholder = "Description">
+                </div>
+                <div class = "tag">
+                    <select class = "tag-input desc">
+                        <option value = "" disabled selected> Tag</option>
+                        <option value = "Food"> Food</option>
+                        <option value = "Salary">Salary</option>
+                        <option value = "Transport"> Transport</option>
+                        <option value = "Entertainment">Entertainment</option>
+                        <option value = "Shopping">Shopping</option>
+                        <option value = "Bills">Bills</option>
+                        <option value = "Healthcare">Healthcare</option>
+                        <option value = "Other">Other</option>
+                    </select>
+                </div>
+                <div class = "side">
+                    <select class = "side-input desc">
+                        <option value = "" disabled selected> Expense/Income</option>
+                        <option value = "Income">Income</option>
+                        <option value = "Expense">Expense</option>
+                    </select>
+                </div>
+                <div class = "money">
+                    <input type = "text" class = "money-input desc" placeholder = "Summ">
+                </div>
+                <div class = "date-div">
+                    <input type = "date" class = "date-input desc" >
+                </div>
+                <p class = "date-text">
+                    Specify the date!
+                </p>
+                
+
+            </div>
+            <div class = "add-div">
+                <button class = "add-button"> Add</button>
+            </div>
+        </div>
+
+
+
+
+        <div class = "right">
+            <div class = "years-div">
+                <input type = "text" class = "year-input" placeholder = "2025">
+            </div>
+            <div class = "months-div">
+                <p class = "January month"> January</p>
+                <p class = "February month"> February</p>
+                <p class = "March month"> March</p>
+                <p class = "April month"> April</p>
+                <p class = "May month"> May</p>
+                <p class = "June month"> June</p>
+                <p class = "July month"> July</p>
+                <p class = "August month"> August</p>
+                <p class = "September month"> September</p>
+                <p class = "October month"> October</p>
+                <p class = "November month"> November</p>
+                <p class = "December month"> December</p>
+                
+            </div>
+            <div class = "diagrams-div">
+                <div class = "first-diagram">
+
+                </div>
+                 <div class = "first-text">
+                    Income
+                </div>
+
+                <div class = "second-diagram">
+
+                </div>
+                       
+                <div class = "second-text">
+                    Expense
+                </div>
+
+                <div class = "third-diagram">
+
+                </div>   
+                <div class = "third-text">
+                    Income <br>vs Expense
+                </div>
+    
+
+
+            </div>
+            <div class = "monthly-actions">
+                
+                
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+<script src = "scripts/script.js"></script>   
+<script src = "scripts/change-delete.js"></script> 
+</body>
+</html>

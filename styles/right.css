@@ -1,0 +1,188 @@
+
+.right{
+    border-radius:10px;
+    background-color:rgb(255, 255, 255);
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.164);
+    padding-bottom:0px;
+    padding-left:0px;
+    width:900px;
+    flex:4;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+.years-div{
+    border-radius:10px;
+    border-bottom-left-radius:0px;
+    border-bottom-right-radius:0px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background-color:rgb(116, 44, 211);
+    width:100%;
+    height:30px;
+}
+.year-input{
+    background-color:rgba(255, 255, 255, 0);
+    width:40px;
+    margin-top:5px;
+}
+.year-input::placeholder{
+    color:white;
+    font-size:15px;
+}
+
+
+
+
+
+
+
+
+
+
+
+.months-div{
+    width:100%;
+    background-color:rgb(116, 44, 211);
+    padding-top:3px;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+}
+.January{
+    padding-left:5px;
+
+}
+
+.December{
+    padding-right:5px;
+}
+
+
+
+
+.month{
+    color:white;
+    padding:2px;
+    transition: all 0.3s;
+    border-radius:3px;
+    border-bottom-left-radius:0px;
+    border-bottom-right-radius:0px;
+}
+
+.month:hover{
+    background-color:white;
+    color:rgb(116, 44, 211);
+}
+
+
+
+
+
+.diagrams-div{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    background-color:rgba(255, 255, 255, 0.637);
+    min-height:100px;
+}
+.first-diagram, .second-diagram, .third-diagram{
+
+    margin:10px;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.164);
+    background-color:rgb(255, 255, 255);
+    height:90px;
+    width:90px;
+    border-radius:80px;
+}
+
+.first-diagram{
+    margin-left:40px;
+}
+.first-text,.second-text,.third-text{
+    color:rgb(116, 44, 211);
+    font-weight:600;
+}
+
+
+
+
+.monthly-actions{
+    overflow-y:auto;
+    overflow-x:auto;
+    width:100%;
+    display:flex;
+    gap:0px;
+    flex-direction:column;
+    background-color:rgba(0, 255, 55, 0);
+}
+
+.action-text{
+    margin: 0; 
+    vertical-align: middle; 
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    line-height: 1; 
+    height: 100%;
+}
+
+
+.money-red{
+    color:red;
+}
+.money-green{
+    color:green;
+}
+
+
+
+.monthly-actions-element{
+    display:grid;
+    grid-template-columns: 90px 120px 120px 100px 100px;
+    grid-template-rows: 20px;
+    margin:5px;
+    border-radius:10px;
+    padding: 10px 7px;
+    background-color:rgba(128, 128, 128, 0.171);
+    align-items:center;
+    height:25px;
+}
+.actions-tag {
+    padding: 5px;
+    border-radius: 120px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0 auto; 
+    margin-top:5px;
+}
+.delete-icon{
+    padding:6px;
+    height:15px;
+}
+.delete-button{
+    margin-left:7px;
+    border-radius:30px;
+    transition: all 0.3s;
+}
+.change-button{
+    border-radius:30px;
+    transition: all 0.3s;
+}
+.change-icon{
+    padding:6px;
+    height:15px;
+}
+.buttons-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center; 
+    height: 100%;
+}

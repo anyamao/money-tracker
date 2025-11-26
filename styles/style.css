@@ -1,0 +1,32 @@
+*{
+    outline:0;
+    border-style:none;
+    padding:0;
+    margin:0;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size:10px;
+    transition: all 0.3s;
+    
+}
+body{
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background-color:rgb(255, 255, 255);
+}
+.tracker-div{
+    width:830px;
+    height:400px;
+    background-color:rgba(255, 255, 255, 0);
+    display:flex;
+    flex-direction:row;
+    border-radius:30px;
+}
+
+
+
+
+
+
