@@ -25,10 +25,11 @@
 .year-input{
     background-color:rgba(255, 255, 255, 0);
     width:40px;
-    margin-top:5px;
+    margin-top:15px;
+    margin-bottom:10px;
 }
 .year-input::placeholder{
-    color:white;
+    color:rgba(255, 255, 255, 0.651);
     font-size:15px;
 }
 
@@ -52,12 +53,12 @@
     justify-content:space-between;
 }
 .January{
-    padding-left:5px;
+    margin-left:10px;
 
 }
 
 .December{
-    padding-right:5px;
+    margin-right:10px;
 }
 
 
@@ -127,7 +128,8 @@
 }
 
 .year-input{
-    color:white;
+    color:rgba(255, 255, 255, 0.651);
+    font-size:15px;
 }
 .monthly-actions{
     overflow-y:auto;
