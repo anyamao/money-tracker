@@ -37,6 +37,12 @@
     margin-bottom:0px;
 }
 
+.added-text{
+    color:rgb(255, 255, 255);
+    font-size:15px;
+    margin-top:-20px;
+    transition: all 0.1s;
+}
 .date-text{
     color:rgb(255, 255, 255);
     font-size:12px;

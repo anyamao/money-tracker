@@ -113,9 +113,22 @@
     font-weight:600;
 }
 
+/* Active month styling */
+.month.active {
+    background-color: white;
+    color: rgb(116, 44, 211);
+}
 
+/* Month hover effects */
+.month {
+    color:white;
+    cursor: pointer;
+    user-select: none;
+}
 
-
+.year-input{
+    color:white;
+}
 .monthly-actions{
     overflow-y:auto;
     overflow-x:auto;

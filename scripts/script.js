@@ -1,8 +1,47 @@
 /* the array that stores the data*/
 let transactions = [];
-let isEditing = false; // Track if we're currently editing
-let editingIndex = -1; // Track which transaction we're editing
+let isEditing = false;
+let editingIndex = -1;
+let currentYear = new Date().getFullYear(); // Default to current year
+let currentMonth = null; // null means all months
+// ==============================================
+// FILTER FUNCTIONS
+// ==============================================
 
+function getFilteredTransactions() {
+    return transactions.filter(transaction => {
+        const transactionDate = new Date(transaction.date);
+        const transactionYear = transactionDate.getFullYear();
+        const transactionMonth = transactionDate.getMonth(); // 0-11 (Jan-Dec)
+        
+        // Filter by year
+        if (transactionYear !== currentYear) {
+            return false;
+        }
+        
+        // Filter by month if selected
+        if (currentMonth !== null && transactionMonth !== currentMonth) {
+            return false;
+        }
+        
+        return true;
+    });
+}
+
+function setYear(year) {
+    currentYear = parseInt(year) || new Date().getFullYear();
+    displayTransactions();
+}
+
+function setMonth(monthIndex) {
+    currentMonth = monthIndex;
+    displayTransactions();
+}
+
+function clearMonthFilter() {
+    currentMonth = null;
+    displayTransactions();
+}
 // ==============================================
 // LOCAL STORAGE FUNCTIONS
 // ==============================================
@@ -16,6 +55,50 @@ function loadTransactions(){
     if(saved)
         transactions = JSON.parse(saved);
 }
+// Year input event listener
+document.querySelector('.year-input').addEventListener('change', function(event) {
+    const year = event.target.value;
+    if (year && year.length === 4) {
+        setYear(year);
+    }
+});
+
+// Also add input event for real-time updates (optional)
+document.querySelector('.year-input').addEventListener('input', function(event) {
+    const year = event.target.value;
+    if (year && year.length === 4) {
+        setYear(year);
+    }
+});
+// Month click event listeners
+document.querySelectorAll('.month').forEach((monthElement, index) => {
+    monthElement.addEventListener('click', function() {
+        // Remove active class from all months
+        document.querySelectorAll('.month').forEach(m => {
+            m.style.backgroundColor = '';
+            m.style.color = 'white';
+        });
+        
+        // Add active class to clicked month
+        this.style.backgroundColor = 'white';
+        this.style.color = 'rgb(116, 44, 211)';
+        
+        setMonth(index); // 0-11 for Jan-Dec
+    });
+});
+
+// Add double-click to clear month filter
+document.querySelectorAll('.month').forEach((monthElement, index) => {
+    monthElement.addEventListener('dblclick', function() {
+        // Remove active class from all months
+        document.querySelectorAll('.month').forEach(m => {
+            m.style.backgroundColor = '';
+            m.style.color = 'white';
+        });
+        
+        clearMonthFilter();
+    });
+});
 
 // ==============================================
 // TOTAL CALCULATION FUNCTIONS
@@ -31,8 +114,10 @@ function resetEditingState() {
 }
 
 function calculateTotal() {
+    const filteredTransactions = getFilteredTransactions(); // Add this line
     let calculatedTotal = 0;
-    transactions.forEach(transaction => {
+    
+    filteredTransactions.forEach(transaction => { // Change to filteredTransactions
         if (transaction.side === 'Income') {
             calculatedTotal += parseInt(transaction.summ);
         } else if (transaction.side === 'Expense') {
@@ -41,7 +126,6 @@ function calculateTotal() {
     });
     return calculatedTotal;
 }
-
 function updateTotal() {
     const total = calculateTotal();
     document.querySelector('.balance-text').textContent = total + '$';
@@ -52,14 +136,20 @@ function updateTotal() {
 // ==============================================
 
 function displayTransactions(){
+    const filteredTransactions = getFilteredTransactions();
     document.querySelector('.monthly-actions').innerHTML = '';
-    transactions.forEach(transaction =>{
+    
+    filteredTransactions.forEach(transaction =>{
         document.querySelector('.monthly-actions').innerHTML += createTransactions(transaction);
     });
+    
     updateTotal();
-    updatePieChart(); // First diagram - Expense tags
-    updatePieChartSecond(); // Second diagram - Income tags
-    updatePieChartThird(); // Third diagram - Income vs Expense money
+    updatePieChart();
+    updatePieChartSecond();
+    updatePieChartThird();
+    
+    // Update the year input display
+    document.querySelector('.year-input').value = currentYear;
 }
 function createTransactions(transaction){
     const tagColor = {
@@ -158,11 +248,13 @@ function deleteTransaction(transactionElement) {
 // ==============================================
 
 function updatePieChart() {
+    
+    const filteredTransactions = getFilteredTransactions(); 
     // Count only EXPENSE tags
     const tagCounts = {};
     let totalExpenses = 0;
     
-    transactions.forEach(transaction => {
+    filteredTransactions.forEach(transaction => {
         if (transaction.side === 'Expense') {
             if (tagCounts[transaction.tag]) {
                 tagCounts[transaction.tag]++;
@@ -217,11 +309,12 @@ document.querySelector('.first-diagram').innerHTML = `
 }
 
 function updatePieChartSecond() {
+        const filteredTransactions = getFilteredTransactions(); 
     // Count only EXPENSE tags
     const tagCounts = {};
     let totalExpenses = 0;
     
-    transactions.forEach(transaction => {
+    filteredTransactions.forEach(transaction => {
         if (transaction.side === 'Income') {
             if (tagCounts[transaction.tag]) {
                 tagCounts[transaction.tag]++;
@@ -291,11 +384,12 @@ function getTagColor(tag) {
 }
 
 function updatePieChartThird() {
+        const filteredTransactions = getFilteredTransactions(); 
     // Calculate total income and expenses
     let totalIncome = 0;
     let totalExpense = 0;
     
-    transactions.forEach(transaction => {
+    filteredTransactions.forEach(transaction => {
         if (transaction.side === 'Income') {
             totalIncome += parseInt(transaction.summ);
         } else if (transaction.side === 'Expense') {
@@ -430,6 +524,14 @@ addButton.addEventListener('click',function(){
         document.querySelector('.side-input').value = '';
         document.querySelector('.money-input').value = '';
         document.querySelector('.date-input').value = '';
+
+        const addedText = document.querySelector('.added-text');
+        addedText.style.color = "rgb(116, 44, 211)";
+        addedText.textContent = "Sucess!"
+
+        setTimeout(function(){
+            addedText.style.color = "rgba(255, 255, 255, 0)";
+        }, 2000);
     }    
 
         
@@ -453,6 +555,12 @@ document.querySelector('.monthly-actions').addEventListener('click', function(ev
 // ==============================================
 
 loadTransactions();
+
+// Set initial year to current year
+currentYear = new Date().getFullYear();
+document.querySelector('.year-input').value = currentYear;
+
 displayTransactions();
-updatePieChart(); // Add this
-updatePieChartSecond(); // Add this
+updatePieChart();
+updatePieChartSecond();
+updatePieChartThird();
