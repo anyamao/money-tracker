@@ -76,12 +76,18 @@
     background-color:white;
     color:rgb(116, 44, 211);
 }
+.month.selected {
+    color: rgb(116, 44, 211) ;
+    background-color: white ;
+    font-weight: b
+}
 
 
 
 
 
 .diagrams-div{
+    height:150px;
     display:flex;
     flex-direction:row;
     align-items:center;
@@ -185,4 +191,134 @@
     align-items: center;
     justify-content: center; 
     height: 100%;
+}
+
+
+/* Pie Chart Styles */
+.pie-chart {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: conic-gradient(
+        var(--color1) 0% var(--percentage1),
+        var(--color2) 0% var(--percentage2),
+        var(--color3) 0% var(--percentage3),
+        var(--color4) 0% var(--percentage4),
+        var(--color5) 0% var(--percentage5),
+        var(--color6) 0% var(--percentage6),
+        var(--color7) 0% var(--percentage7),
+        var(--color8) 0% var(--percentage8)
+    );
+    position: relative;
+}
+
+.pie-chart::before {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    top: 15px;
+    left: 15px;
+}
+.pie-chart-second {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: conic-gradient(
+        var(--color1) 0% var(--percentage1),
+        var(--color2) 0% var(--percentage2),
+        var(--color3) 0% var(--percentage3),
+        var(--color4) 0% var(--percentage4),
+        var(--color5) 0% var(--percentage5),
+        var(--color6) 0% var(--percentage6),
+        var(--color7) 0% var(--percentage7),
+        var(--color8) 0% var(--percentage8)
+    );
+    position: relative;
+}
+
+.pie-chart-second::before {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    top: 15px;
+    left: 15px;
+}
+/* Third Pie Chart Styles */
+.pie-chart-third {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.pie-chart-third::before {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    top: 15px;
+    left: 15px;
+}
+
+/* Money Comparison Legend */
+.money-comparison {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+    font-size: 9px;
+}
+
+.comparison-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.comparison-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+
+/* Diagram Container */
+.diagram-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Center text inside the white circle */
+.first-text, .second-text, .third-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(116, 44, 211);
+    font-weight: 600;
+    font-size: 12px;
+    text-align: center;
+    z-index: 2;
+    pointer-events: none; /* Prevent text from blocking clicks */
+    width: 60px; /* Match the white circle size */
+    line-height: 1.2;
+}
+
+/* Adjust the existing text styles */
+.first-text, .second-text, .third-text {
+    margin: 0;
+    display: block;
+}
+.first-text{
+    margin-left:15px;
 }

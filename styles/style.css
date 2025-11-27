@@ -18,7 +18,7 @@ body{
 }
 .tracker-div{
     width:830px;
-    height:400px;
+    height:500px;
     background-color:rgba(255, 255, 255, 0);
     display:flex;
     flex-direction:row;

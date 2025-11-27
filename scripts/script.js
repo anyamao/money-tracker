@@ -1,42 +1,49 @@
 /* the array that stores the data*/
 let transactions = [];
-let total = 0;
+let isEditing = false; // Track if we're currently editing
+let editingIndex = -1; // Track which transaction we're editing
 
 // ==============================================
 // LOCAL STORAGE FUNCTIONS
 // ==============================================
 
-//saving the transactions in localStorage
 function saveTransactions(){
     localStorage.setItem('transactions',JSON.stringify(transactions));
-    localStorage.setItem('total',JSON.stringify(total));
 }
 
 function loadTransactions(){
     const saved = localStorage.getItem('transactions');
     if(saved)
         transactions = JSON.parse(saved);
-    
-    // Load total as well
-    const savedTotal = localStorage.getItem('total');
-    if (savedTotal) {
-        total = JSON.parse(savedTotal);
-    }
 }
 
 // ==============================================
-// TOTAL CALCULATION FUNCTION
+// TOTAL CALCULATION FUNCTIONS
 // ==============================================
 
-function updateTotal() {
-    total = 0;
+function resetEditingState() {
+    isEditing = false;
+    editingIndex = -1;
+    const addButton = document.querySelector('.add-button');
+    addButton.textContent = 'Add';
+    addButton.style.backgroundColor = ''; // Reset to original
+    addButton.style.border = '';
+}
+
+function calculateTotal() {
+    let calculatedTotal = 0;
     transactions.forEach(transaction => {
         if (transaction.side === 'Income') {
-            total += parseInt(transaction.summ);
+            calculatedTotal += parseInt(transaction.summ);
         } else if (transaction.side === 'Expense') {
-            total -= parseInt(transaction.summ);
+            calculatedTotal -= parseInt(transaction.summ);
         }
     });
+    return calculatedTotal;
+}
+
+function updateTotal() {
+    const total = calculateTotal();
     document.querySelector('.balance-text').textContent = total + '$';
 }
 
@@ -47,12 +54,13 @@ function updateTotal() {
 function displayTransactions(){
     document.querySelector('.monthly-actions').innerHTML = '';
     transactions.forEach(transaction =>{
-        if (transaction.description)
-            document.querySelector('.monthly-actions').innerHTML += createTransactions(transaction);
+        document.querySelector('.monthly-actions').innerHTML += createTransactions(transaction);
     });
     updateTotal();
+    updatePieChart(); // First diagram - Expense tags
+    updatePieChartSecond(); // Second diagram - Income tags
+    updatePieChartThird(); // Third diagram - Income vs Expense money
 }
-
 function createTransactions(transaction){
     const tagColor = {
         'Salary': 'rgb(84, 0, 194)',
@@ -84,14 +92,58 @@ function createTransactions(transaction){
 }
 
 // ==============================================
-// DELETE FUNCTIONALITY
+// DELETE & EDIT FUNCTIONS
 // ==============================================
 
-function deleteTransaction(transactionElement) {
-    // Find the index of this transaction in the array
+function changeTransaction(transactionElement) {
+    if (isEditing) {
+        const addButton = document.querySelector('.add-button');
+        addButton.style.border = "2px solid red";
+        setTimeout(function() {
+            addButton.style.border = "";
+        }, 2000);
+        return;
+    }
+    
+    // Find the index of this transaction
     const index = Array.from(transactionElement.parentElement.children).indexOf(transactionElement);
     
     if (index !== -1) {
+        const transaction = transactions[index];
+        
+        // Set editing state
+        isEditing = true;
+        editingIndex = index;
+        
+        // Fill the form with current values
+        document.querySelector('.description-input').value = transaction.description;
+        document.querySelector('.tag-input').value = transaction.tag;
+        document.querySelector('.side-input').value = transaction.side;
+        document.querySelector('.money-input').value = transaction.summ;
+        document.querySelector('.date-input').value = transaction.date;
+        
+        // Change add button to "Update" with visual feedback
+        const addButton = document.querySelector('.add-button');
+        addButton.textContent = 'Update';
+        addButton.style.backgroundColor = '#ffa500'; // Orange to indicate editing
+        addButton.style.border = "2px solid #ffa500";
+    }
+}
+function deleteTransaction(transactionElement) {
+    const index = Array.from(transactionElement.parentElement.children).indexOf(transactionElement);
+    
+    if (index !== -1) {
+        // If deleting the transaction we're currently editing, reset editing state
+        if (isEditing && index === editingIndex) {
+            resetEditingState();
+            // Also clear the form since we were editing this transaction
+            document.querySelector('.description-input').value = '';
+            document.querySelector('.tag-input').value = '';
+            document.querySelector('.side-input').value = '';
+            document.querySelector('.money-input').value = '';
+            document.querySelector('.date-input').value = '';
+        }
+        
         // Remove from array
         transactions.splice(index, 1);
         
@@ -101,37 +153,191 @@ function deleteTransaction(transactionElement) {
         displayTransactions();
     }
 }
-
 // ==============================================
-// CHANGE/EDIT FUNCTIONALITY
+// PIE CHART FUNCTIONS
 // ==============================================
 
-function changeTransaction(transactionElement) {
-    // Find the index of this transaction
-    const index = Array.from(transactionElement.parentElement.children).indexOf(transactionElement);
+function updatePieChart() {
+    // Count only EXPENSE tags
+    const tagCounts = {};
+    let totalExpenses = 0;
     
-    if (index !== -1) {
-        const transaction = transactions[index];
-        
-        // Fill the form with current values
-        document.querySelector('.description-input').value = transaction.description;
-        document.querySelector('.tag-input').value = transaction.tag;
-        document.querySelector('.side-input').value = transaction.side;
-        document.querySelector('.money-input').value = transaction.summ;
-        document.querySelector('.date-input').value = transaction.date;
-        
-        // Remove the old transaction
-        transactions.splice(index, 1);
-        
-        // Change add button text to "Update"
-        const addButton = document.querySelector('.add-button');
-        addButton.textContent = 'Update';
-        addButton.dataset.editing = 'true';
-        
-        // Update total temporarily
-        updateTotal();
+    transactions.forEach(transaction => {
+        if (transaction.side === 'Expense') {
+            if (tagCounts[transaction.tag]) {
+                tagCounts[transaction.tag]++;
+            } else {
+                tagCounts[transaction.tag] = 1;
+            }
+            totalExpenses++;
+        }
+    });
+
+    // If no expenses, show empty chart
+    if (totalExpenses === 0) {
+        document.querySelector('.first-diagram').innerHTML = '<div class="pie-chart" style="background: #f0f0f0;"></div>';
+        return;
     }
+
+    // Calculate percentages based on expenses only
+    const tags = Object.keys(tagCounts);
+    const percentages = tags.map(tag => (tagCounts[tag] / totalExpenses) * 100);
+
+    // Build conic-gradient CSS
+    let accumulatedPercentage = 0;
+    let gradientParts = [];
+    
+    tags.forEach((tag, index) => {
+        const percentage = percentages[index];
+        gradientParts.push(`${getTagColor(tag)} ${accumulatedPercentage}% ${accumulatedPercentage + percentage}%`);
+        accumulatedPercentage += percentage;
+    });
+
+    const gradient = `conic-gradient(${gradientParts.join(', ')})`;
+    
+    // Build legend HTML (only for expenses)
+    let legendHTML = '<div class="pie-legend">';
+    tags.forEach((tag, index) => {
+        const percentage = percentages[index];
+        if (percentage >= 5) { // Only show significant segments
+            legendHTML += `
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: ${getTagColor(tag)}"></div>
+                    <span class="legend-text">${tag} (${Math.round(percentage)}%)</span>
+                </div>
+            `;
+        }
+    });
+    legendHTML += '</div>';
+
+    // Update the diagram
+document.querySelector('.first-diagram').innerHTML = `
+        <div class="pie-chart" style="background: ${gradient};"></div>
+    `;
 }
+
+function updatePieChartSecond() {
+    // Count only EXPENSE tags
+    const tagCounts = {};
+    let totalExpenses = 0;
+    
+    transactions.forEach(transaction => {
+        if (transaction.side === 'Income') {
+            if (tagCounts[transaction.tag]) {
+                tagCounts[transaction.tag]++;
+            } else {
+                tagCounts[transaction.tag] = 1;
+            }
+            totalExpenses++;
+        }
+    });
+
+    // If no expenses, show empty chart
+    if (totalExpenses === 0) {
+        document.querySelector('.second-diagram').innerHTML = '<div class="pie-chart-second" style="background: #f0f0f0;"></div>';
+        return;
+    }
+
+    // Calculate percentages based on expenses only
+    const tags = Object.keys(tagCounts);
+    const percentages = tags.map(tag => (tagCounts[tag] / totalExpenses) * 100);
+
+    // Build conic-gradient CSS
+    let accumulatedPercentage = 0;
+    let gradientParts = [];
+    
+    tags.forEach((tag, index) => {
+        const percentage = percentages[index];
+        gradientParts.push(`${getTagColor(tag)} ${accumulatedPercentage}% ${accumulatedPercentage + percentage}%`);
+        accumulatedPercentage += percentage;
+    });
+
+    const gradient = `conic-gradient(${gradientParts.join(', ')})`;
+    
+    // Build legend HTML (only for expenses)
+    let legendHTML = '<div class="pie-legend">';
+    tags.forEach((tag, index) => {
+        const percentage = percentages[index];
+        if (percentage >= 5) { // Only show significant segments
+            legendHTML += `
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: ${getTagColor(tag)}"></div>
+                    <span class="legend-text">${tag} (${Math.round(percentage)}%)</span>
+                </div>
+            `;
+        }
+    });
+    legendHTML += '</div>';
+
+    // Update the diagram
+document.querySelector('.second-diagram').innerHTML = `
+        <div class="pie-chart-second" style="background: ${gradient};"></div>
+    `;
+}
+
+// Helper function to get tag colors (reuse your existing colors)
+function getTagColor(tag) {
+    const tagColors = {
+        'Salary': 'rgb(84, 0, 194)',
+        'Food': 'rgb(116, 44, 211)',
+        'Transport': 'rgb(151, 82, 241)',
+        'Entertainment': 'rgb(191, 143, 255)',
+        'Shopping': 'rgb(45, 45, 167)',
+        'Bills': 'rgb(91, 91, 241)',
+        'Healthcare': 'rgb(133, 133, 241)',
+        'Other': 'rgb(50, 50, 255)'
+    };
+    return tagColors[tag] || 'rgb(128, 128, 128)';
+}
+
+function updatePieChartThird() {
+    // Calculate total income and expenses
+    let totalIncome = 0;
+    let totalExpense = 0;
+    
+    transactions.forEach(transaction => {
+        if (transaction.side === 'Income') {
+            totalIncome += parseInt(transaction.summ);
+        } else if (transaction.side === 'Expense') {
+            totalExpense += parseInt(transaction.summ);
+        }
+    });
+
+    const totalMoney = totalIncome + totalExpense;
+
+    // If no transactions, show empty chart
+    if (totalMoney === 0) {
+        document.querySelector('.third-diagram').innerHTML = '<div class="pie-chart-third" style="background: #f0f0f0;"></div>';
+        return;
+    }
+
+    // Calculate percentages
+    const incomePercentage = (totalIncome / totalMoney) * 100;
+    const expensePercentage = (totalExpense / totalMoney) * 100;
+
+    // Build conic-gradient CSS
+    const gradient = `conic-gradient(
+        #4CAF50 0% ${incomePercentage}%,
+        #FF5252 0% ${incomePercentage + expensePercentage}%
+    )`;
+
+    // Update the diagram (just the chart, no legend)
+    document.querySelector('.third-diagram').innerHTML = `
+        <div class="pie-chart-third" style="background: ${gradient};"></div>
+    `;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ==============================================
 // EVENT LISTENERS
@@ -139,7 +345,6 @@ function changeTransaction(transactionElement) {
 
 const addButton = document.querySelector('.add-button');
 
-// Add transaction event listener
 addButton.addEventListener('click',function(){
     // handling invalid input
     if (document.querySelector('.side-input').value === ''){
@@ -171,29 +376,38 @@ addButton.addEventListener('click',function(){
             document.querySelector('.date-input').style.border = "1px solid white";
         },3000);
     }
-    // end of handing invalid input
-
-    if (document.querySelector('.side-input').value !== '' &&document.querySelector('.money-input').value !== '' && document.querySelector('.date-input').value !== ''){
+    if (document.querySelector('.side-input').value !== '' && document.querySelector('.money-input').value !== '' && document.querySelector('.date-input').value !== '' && document.querySelector('.tag-input').value !== ''){
         const description = document.querySelector('.description-input').value;
         const tag = document.querySelector('.tag-input').value;
         const side = document.querySelector('.side-input').value;
         const summ = document.querySelector('.money-input').value;
         const date = document.querySelector('.date-input').value;
 
-        // Check if we're in edit mode
-        if (addButton.dataset.editing === 'true') {
+        const tagColor = {
+            'Salary': 'rgb(84, 0, 194)',
+            'Food':'rgb(116, 44, 211)',
+            'Transport': 'rgb(151, 82, 241)',
+            'Entertainment':'rgb(191, 143, 255)',
+            'Shopping':'rgb(45, 45, 167)',
+            'Bills': 'rgb(91, 91, 241)',
+            'Healthcare': 'rgb(133, 133, 241)',
+            'Other':'rgb(50, 50, 255)'
+        };
+
+
+
+        if (isEditing) {
             // We're updating an existing transaction
-            transactions.push({
+            transactions[editingIndex] = {
                 description,
                 tag,
                 side,
                 summ,
                 date
-            });
+            };
             
-            // Reset button to "Add" mode
-            addButton.textContent = 'Add';
-            addButton.dataset.editing = 'false';
+            // Reset editing state
+            resetEditingState();
         } else {
             // We're adding a new transaction
             transactions.push({
@@ -205,7 +419,7 @@ addButton.addEventListener('click',function(){
             });
         }
 
-        // Update total, save, and display
+        // Update, save, and display
         updateTotal();
         saveTransactions();
         displayTransactions();
@@ -217,9 +431,11 @@ addButton.addEventListener('click',function(){
         document.querySelector('.money-input').value = '';
         document.querySelector('.date-input').value = '';
     }    
+
+        
+        
 });
 
-// Event delegation for delete and change buttons
 document.querySelector('.monthly-actions').addEventListener('click', function(event) {
     if (event.target.closest('.delete-button')) {
         const transactionElement = event.target.closest('.monthly-actions-element');
@@ -238,3 +454,5 @@ document.querySelector('.monthly-actions').addEventListener('click', function(ev
 
 loadTransactions();
 displayTransactions();
+updatePieChart(); // Add this
+updatePieChartSecond(); // Add this
