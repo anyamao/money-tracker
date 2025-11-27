@@ -5,7 +5,7 @@
     box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.164);
     flex-direction:column;
     background-color:rgb(255, 255, 255);
-    width:260px;
+    width:270px;
     display:flex;
     align-items:center;
 }
@@ -20,6 +20,7 @@
     border-bottom-left-radius:0px;
     border-bottom-right-radius:0px;
     width:100%;
+    overflow-x:auto;
 }
 .current-text{
     padding-top:10px;
@@ -27,6 +28,7 @@
     color:rgba(255, 255, 255, 0.651);
 }
 .balance-text{
+    overflow-x:auto;
     font-size:30px;
     color:rgb(255, 255, 255);
     font-weight:500;
@@ -59,6 +61,7 @@
 }
 
 .desc{
+       overflow-x:auto;
     width:200px;
     cursor:pointer;
     padding-left:5px;
